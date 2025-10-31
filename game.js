@@ -4,12 +4,14 @@ const ctx = canvas.getContext('2d');
 const scoreElement = document.getElementById('score');
 const livesElement = document.getElementById('lives');
 const startBtn = document.getElementById('startBtn');
+const speedSlider = document.getElementById('speedSlider');
+const speedValue = document.getElementById('speedValue');
 
 // Game constants
 const CELL_SIZE = 28;
 const GRID_WIDTH = 20;
 const GRID_HEIGHT = 20;
-const MOVE_SPEED = 12; // フレーム数：数値が大きいほど遅くなる（12 = 約5回/秒）
+let MOVE_SPEED = 12; // フレーム数：数値が大きいほど遅くなる（12 = 約5回/秒）
 
 // Game state
 let score = 0;
@@ -503,6 +505,35 @@ function resizeCanvas() {
 // Call on load and resize
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
+
+// Speed control
+function updateSpeedDisplay(value) {
+    const speed = parseInt(value);
+    let speedText = '';
+
+    if (speed <= 8) {
+        speedText = '超高速';
+    } else if (speed <= 10) {
+        speedText = '高速';
+    } else if (speed <= 12) {
+        speedText = '中速';
+    } else if (speed <= 16) {
+        speedText = '低速';
+    } else {
+        speedText = '超低速';
+    }
+
+    const fps = (60 / speed).toFixed(1);
+    speedValue.textContent = `${speedText} (${speed}) - 約${fps}回/秒`;
+}
+
+speedSlider.addEventListener('input', (e) => {
+    MOVE_SPEED = parseInt(e.target.value);
+    updateSpeedDisplay(e.target.value);
+});
+
+// Initialize speed display
+updateSpeedDisplay(speedSlider.value);
 
 // Initial draw
 draw();

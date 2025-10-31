@@ -14,6 +14,19 @@
             <div class="lives">残機: <span id="lives">3</span></div>
             <button id="startBtn">ゲーム開始</button>
         </div>
+
+        <!-- 速度調整UI -->
+        <div class="speed-control">
+            <label for="speedSlider">
+                移動速度: <span id="speedValue">中速 (12)</span>
+            </label>
+            <input type="range" id="speedSlider" min="6" max="20" value="12" step="2">
+            <div class="speed-labels">
+                <span>速い</span>
+                <span>遅い</span>
+            </div>
+        </div>
+
         <canvas id="gameCanvas" width="560" height="560"></canvas>
 
         <!-- モバイル用仮想十字キー -->
