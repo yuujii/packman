@@ -383,5 +383,112 @@ function endGame() {
     alert(`ゲームオーバー！ 最終スコア: ${score}`);
 }
 
+// Mobile controls - Virtual D-Pad
+const dpadButtons = document.querySelectorAll('.dpad-btn[data-direction]');
+dpadButtons.forEach(button => {
+    button.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (!gameRunning) return;
+
+        const direction = button.getAttribute('data-direction');
+        handleDirectionInput(direction);
+    });
+
+    // Also support click for testing
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!gameRunning) return;
+
+        const direction = button.getAttribute('data-direction');
+        handleDirectionInput(direction);
+    });
+});
+
+function handleDirectionInput(direction) {
+    switch(direction) {
+        case 'up':
+            pacman.nextDx = 0;
+            pacman.nextDy = -1;
+            break;
+        case 'down':
+            pacman.nextDx = 0;
+            pacman.nextDy = 1;
+            break;
+        case 'left':
+            pacman.nextDx = -1;
+            pacman.nextDy = 0;
+            break;
+        case 'right':
+            pacman.nextDx = 1;
+            pacman.nextDy = 0;
+            break;
+    }
+}
+
+// Swipe controls for mobile
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+canvas.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+}, false);
+
+canvas.addEventListener('touchend', (e) => {
+    if (!gameRunning) return;
+
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    handleSwipe();
+}, false);
+
+function handleSwipe() {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    const minSwipeDistance = 30; // Minimum distance for swipe detection
+
+    // Check if swipe is long enough
+    if (Math.abs(deltaX) < minSwipeDistance && Math.abs(deltaY) < minSwipeDistance) {
+        return;
+    }
+
+    // Determine swipe direction
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal swipe
+        if (deltaX > 0) {
+            handleDirectionInput('right');
+        } else {
+            handleDirectionInput('left');
+        }
+    } else {
+        // Vertical swipe
+        if (deltaY > 0) {
+            handleDirectionInput('down');
+        } else {
+            handleDirectionInput('up');
+        }
+    }
+}
+
+// Responsive canvas sizing
+function resizeCanvas() {
+    const container = document.querySelector('.container');
+    const maxWidth = Math.min(560, window.innerWidth - 60);
+
+    if (window.innerWidth <= 768) {
+        canvas.style.width = maxWidth + 'px';
+        canvas.style.height = maxWidth + 'px';
+    } else {
+        canvas.style.width = '560px';
+        canvas.style.height = '560px';
+    }
+}
+
+// Call on load and resize
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
 // Initial draw
 draw();

@@ -91,3 +91,170 @@ h1 {
     margin: 5px 0;
     font-size: 1.1em;
 }
+
+/* モバイル用仮想十字キー */
+.mobile-controls {
+    display: none; /* デスクトップでは非表示 */
+    margin: 20px auto;
+    max-width: 300px;
+}
+
+.dpad {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 10px;
+    width: 240px;
+    height: 240px;
+    margin: 0 auto;
+}
+
+.dpad-btn {
+    background: linear-gradient(145deg, #4a4a4a, #2a2a2a);
+    border: 3px solid #666;
+    border-radius: 15px;
+    color: #fff;
+    font-size: 2em;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dpad-btn:active {
+    background: linear-gradient(145deg, #2a2a2a, #4a4a4a);
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.dpad-up {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.dpad-left {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.dpad-center {
+    grid-column: 2;
+    grid-row: 2;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    cursor: default;
+    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+
+.dpad-center:active {
+    transform: none;
+    background: #1a1a1a;
+}
+
+.dpad-right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.dpad-down {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        align-items: flex-start;
+    }
+
+    .container {
+        padding: 15px;
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+
+    .game-info {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        font-size: 1em;
+    }
+
+    #startBtn {
+        width: 100%;
+        padding: 12px;
+        font-size: 1.1em;
+    }
+
+    #gameCanvas {
+        max-width: 100%;
+        height: auto;
+        width: 100%;
+    }
+
+    .mobile-controls {
+        display: block; /* モバイルで表示 */
+    }
+
+    .dpad {
+        width: 200px;
+        height: 200px;
+        gap: 8px;
+    }
+
+    .dpad-btn {
+        font-size: 1.5em;
+        border-radius: 10px;
+    }
+
+    .controls p {
+        font-size: 0.95em;
+    }
+
+    .desktop-hint {
+        display: none; /* モバイルでは非表示 */
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-hint {
+        display: none; /* デスクトップでは非表示 */
+    }
+}
+
+/* 小型スマートフォン対応 */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .game-info {
+        font-size: 0.9em;
+    }
+
+    .dpad {
+        width: 180px;
+        height: 180px;
+        gap: 6px;
+    }
+
+    .dpad-btn {
+        font-size: 1.3em;
+        border-width: 2px;
+    }
+
+    .controls p {
+        font-size: 0.85em;
+    }
+}
