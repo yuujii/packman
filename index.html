@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パックマン</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>パックマン</h1>
+        <div class="game-info">
+            <div class="score">スコア: <span id="score">0</span></div>
+            <div class="lives">残機: <span id="lives">3</span></div>
+            <button id="startBtn">ゲーム開始</button>
+        </div>
+        <canvas id="gameCanvas" width="560" height="560"></canvas>
+        <div class="controls">
+            <p>操作: 矢印キー (↑↓←→) でパックマンを動かそう！</p>
+            <p>すべてのドット（餌）を食べてゴーストから逃げよう！</p>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

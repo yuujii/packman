@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+h1 {
+    color: #ffff00;
+    font-size: 3em;
+    margin-bottom: 20px;
+    text-shadow:
+        3px 3px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.score, .lives {
+    color: #ffff00;
+}
+
+#startBtn {
+    background: #00ff00;
+    color: #000;
+    border: none;
+    padding: 10px 25px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#startBtn:hover {
+    background: #00dd00;
+    transform: scale(1.05);
+}
+
+#startBtn:active {
+    transform: scale(0.95);
+}
+
+#gameCanvas {
+    border: 4px solid #000;
+    border-radius: 10px;
+    background: #000;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.controls {
+    margin-top: 20px;
+    color: #333;
+    line-height: 1.8;
+}
+
+.controls p {
+    margin: 5px 0;
+    font-size: 1.1em;
+}
