@@ -9,7 +9,7 @@ const startBtn = document.getElementById('startBtn');
 const CELL_SIZE = 28;
 const GRID_WIDTH = 20;
 const GRID_HEIGHT = 20;
-const MOVE_SPEED = 8; // フレーム数：数値が大きいほど遅くなる（8 = 約7.5回/秒）
+const MOVE_SPEED = 12; // フレーム数：数値が大きいほど遅くなる（12 = 約5回/秒）
 
 // Game state
 let score = 0;
