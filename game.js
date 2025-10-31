@@ -9,12 +9,14 @@ const startBtn = document.getElementById('startBtn');
 const CELL_SIZE = 28;
 const GRID_WIDTH = 20;
 const GRID_HEIGHT = 20;
+const MOVE_SPEED = 8; // フレーム数：数値が大きいほど遅くなる（8 = 約7.5回/秒）
 
 // Game state
 let score = 0;
 let lives = 3;
 let gameRunning = false;
 let animationId;
+let moveCounter = 0; // 移動速度制御用
 
 // Map layout (0 = dot, 1 = wall, 2 = empty, 3 = power pellet)
 const map = [
@@ -105,6 +107,7 @@ function startGame() {
     gameRunning = true;
     score = 0;
     lives = 3;
+    moveCounter = 0;
     dotsMap = map.map(row => [...row]);
     pacman.x = 1;
     pacman.y = 1;
@@ -139,113 +142,124 @@ function gameLoop() {
 }
 
 function update() {
-    // Try to change direction
-    const nextX = pacman.x + pacman.nextDx;
-    const nextY = pacman.y + pacman.nextDy;
+    // 移動速度制御
+    moveCounter++;
 
-    if (canMove(nextX, nextY)) {
-        pacman.dx = pacman.nextDx;
-        pacman.dy = pacman.nextDy;
-    }
+    // MOVE_SPEEDフレームごとに移動
+    if (moveCounter >= MOVE_SPEED) {
+        moveCounter = 0;
 
-    // Move pacman
-    const newX = pacman.x + pacman.dx;
-    const newY = pacman.y + pacman.dy;
+        // Try to change direction
+        const nextX = pacman.x + pacman.nextDx;
+        const nextY = pacman.y + pacman.nextDy;
 
-    if (canMove(newX, newY)) {
-        pacman.x = newX;
-        pacman.y = newY;
-
-        // Wrap around
-        if (pacman.x < 0) pacman.x = GRID_WIDTH - 1;
-        if (pacman.x >= GRID_WIDTH) pacman.x = 0;
-
-        // Collect dots
-        if (dotsMap[pacman.y] && dotsMap[pacman.y][pacman.x] === 0) {
-            dotsMap[pacman.y][pacman.x] = 2;
-            score += 10;
-            updateScore();
+        if (canMove(nextX, nextY)) {
+            pacman.dx = pacman.nextDx;
+            pacman.dy = pacman.nextDy;
         }
 
-        // Collect power pellets
-        if (dotsMap[pacman.y] && dotsMap[pacman.y][pacman.x] === 3) {
-            dotsMap[pacman.y][pacman.x] = 2;
-            score += 50;
-            powerMode = true;
-            powerModeTimer = 180; // 3 seconds at 60fps
-            updateScore();
+        // Move pacman
+        const newX = pacman.x + pacman.dx;
+        const newY = pacman.y + pacman.dy;
+
+        if (canMove(newX, newY)) {
+            pacman.x = newX;
+            pacman.y = newY;
+
+            // Wrap around
+            if (pacman.x < 0) pacman.x = GRID_WIDTH - 1;
+            if (pacman.x >= GRID_WIDTH) pacman.x = 0;
+
+            // Collect dots
+            if (dotsMap[pacman.y] && dotsMap[pacman.y][pacman.x] === 0) {
+                dotsMap[pacman.y][pacman.x] = 2;
+                score += 10;
+                updateScore();
+            }
+
+            // Collect power pellets
+            if (dotsMap[pacman.y] && dotsMap[pacman.y][pacman.x] === 3) {
+                dotsMap[pacman.y][pacman.x] = 2;
+                score += 50;
+                powerMode = true;
+                powerModeTimer = 180; // 3 seconds at 60fps
+                updateScore();
+            }
         }
     }
 
-    // Update power mode
+    // MOVE_SPEEDフレームごとにゴースト移動と衝突判定
+    if (moveCounter === 0) {
+        // Move ghosts
+        if (Math.random() < 0.1) { // 10% chance to change direction each frame
+            ghosts.forEach(ghost => {
+                const directions = [
+                    { dx: 1, dy: 0 },
+                    { dx: -1, dy: 0 },
+                    { dx: 0, dy: 1 },
+                    { dx: 0, dy: -1 }
+                ];
+
+                const validDirections = directions.filter(dir =>
+                    canMove(ghost.x + dir.dx, ghost.y + dir.dy)
+                );
+
+                if (validDirections.length > 0) {
+                    const dir = validDirections[Math.floor(Math.random() * validDirections.length)];
+                    ghost.dx = dir.dx;
+                    ghost.dy = dir.dy;
+                }
+            });
+        }
+
+        ghosts.forEach(ghost => {
+            const newX = ghost.x + ghost.dx;
+            const newY = ghost.y + ghost.dy;
+
+            if (canMoveGhost(newX, newY)) {
+                ghost.x = newX;
+                ghost.y = newY;
+            }
+
+            // Check collision with pacman
+            if (Math.abs(ghost.x - pacman.x) < 0.5 && Math.abs(ghost.y - pacman.y) < 0.5) {
+                if (powerMode) {
+                    // Reset ghost position
+                    ghost.x = 9;
+                    ghost.y = 9;
+                    score += 200;
+                    updateScore();
+                } else {
+                    lives--;
+                    updateLives();
+
+                    if (lives <= 0) {
+                        endGame();
+                    } else {
+                        // Reset positions
+                        pacman.x = 1;
+                        pacman.y = 1;
+                        pacman.dx = 0;
+                        pacman.dy = 0;
+                    }
+                }
+            }
+        });
+
+        // Check win condition
+        const dotsRemaining = dotsMap.some(row => row.some(cell => cell === 0 || cell === 3));
+        if (!dotsRemaining) {
+            alert('おめでとうございます！ステージクリア！');
+            endGame();
+        }
+    }
+
+    // Update power mode (毎フレーム更新)
     if (powerMode) {
         powerModeTimer--;
         if (powerModeTimer <= 0) {
             powerMode = false;
         }
-    }
-
-    // Move ghosts
-    if (Math.random() < 0.1) { // 10% chance to change direction each frame
-        ghosts.forEach(ghost => {
-            const directions = [
-                { dx: 1, dy: 0 },
-                { dx: -1, dy: 0 },
-                { dx: 0, dy: 1 },
-                { dx: 0, dy: -1 }
-            ];
-
-            const validDirections = directions.filter(dir =>
-                canMove(ghost.x + dir.dx, ghost.y + dir.dy)
-            );
-
-            if (validDirections.length > 0) {
-                const dir = validDirections[Math.floor(Math.random() * validDirections.length)];
-                ghost.dx = dir.dx;
-                ghost.dy = dir.dy;
-            }
-        });
-    }
-
-    ghosts.forEach(ghost => {
-        const newX = ghost.x + ghost.dx;
-        const newY = ghost.y + ghost.dy;
-
-        if (canMoveGhost(newX, newY)) {
-            ghost.x = newX;
-            ghost.y = newY;
-        }
-
-        // Check collision with pacman
-        if (Math.abs(ghost.x - pacman.x) < 0.5 && Math.abs(ghost.y - pacman.y) < 0.5) {
-            if (powerMode) {
-                // Reset ghost position
-                ghost.x = 9;
-                ghost.y = 9;
-                score += 200;
-                updateScore();
-            } else {
-                lives--;
-                updateLives();
-
-                if (lives <= 0) {
-                    endGame();
-                } else {
-                    // Reset positions
-                    pacman.x = 1;
-                    pacman.y = 1;
-                    pacman.dx = 0;
-                    pacman.dy = 0;
-                }
-            }
-        }
-    });
-
-    // Check win condition
-    const dotsRemaining = dotsMap.some(row => row.some(cell => cell === 0 || cell === 3));
-    if (!dotsRemaining) {
-        alert('おめでとうございます！ステージクリア！');
-        endGame();
     }
 
     // Animate mouth
